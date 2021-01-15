@@ -50,21 +50,18 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) => MaterialApp(
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        home: BlocBuilder<InitAppBloc, FirstTimeInAppState>(
-          cubit: _initAppBloc,
-          builder: (context, initAppState) {
-            switch (initAppState.runtimeType) {
-              case FirstTime:
-                return OnBoardingScreen();
-              case NoFirstTime:
-                return _checkIfUserIsLoggedIn();
-              default:
-                return const Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-            }
+        home: FutureBuilder<FirebaseApp>(
+          future: Firebase.initializeApp(),
+          builder: (BuildContext context, AsyncSnapshot<FirebaseApp> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return BlocProvider(
+                create: (context) => LoginBloc(),
+                child: DetermineAccess(),
+              );
+            } else if (snapshot.hasError) {
+              return _error();
+            } else
+              return _loading();
           },
         ),
       );
