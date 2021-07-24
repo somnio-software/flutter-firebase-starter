@@ -29,6 +29,10 @@ void main() {
         mockUser = MockUser();
       });
 
+      test('throwsAssertionError when authService is null', () {
+        expect(() => SignUpBloc(authService: null), throwsAssertionError);
+      });
+
       test('has valid initial state', () {
         expect(
           SignUpBloc(authService: mockAuthService).state,
@@ -47,6 +51,7 @@ void main() {
 
       blocTest<SignUpBloc, SignUpState>(
         'calls authService.createUserWithEmailAndPassword',
+        act: (bloc) => bloc.add(const SignUpRequested()),
         seed: () => SignUpState(
           status: SignUpStatus.valid,
           firstName: firstName,
@@ -59,12 +64,14 @@ void main() {
           return SignUpBloc(authService: mockAuthService);
         },
         verify: (_) {
-          mockAuthService.createUserWithEmailAndPassword(
-            name: firstName.value,
-            lastName: lastName.value,
-            email: email.value,
-            password: password.value,
-          );
+          verify(
+            mockAuthService.createUserWithEmailAndPassword(
+              name: firstName.value,
+              lastName: lastName.value,
+              email: email.value,
+              password: password.value,
+            ),
+          ).called(1);
         },
       );
 

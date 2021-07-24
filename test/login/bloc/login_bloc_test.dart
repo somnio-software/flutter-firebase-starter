@@ -62,10 +62,12 @@ void main() {
           );
         },
         verify: (_) {
-          mockAuthService.signInWithEmailAndPassword(
-            email: email.value,
-            password: password.value,
-          );
+          verify(
+            mockAuthService.signInWithEmailAndPassword(
+              email: email.value,
+              password: password.value,
+            ),
+          ).called(1);
         },
       );
 
@@ -155,15 +157,17 @@ void main() {
           );
         },
         verify: (_) {
-          mockAuthService.signInWithSocialMedia(
-            method: SocialMediaMethod.GOOGLE,
-          );
+          verify(
+            mockAuthService.signInWithSocialMedia(
+              method: SocialMediaMethod.GOOGLE,
+            ),
+          ).called(1);
         },
       );
 
       blocTest<LoginBloc, LoginState>(
         'emits [loading, loggedIn] when '
-        'authService.signInWithSocialMedia succeeds',
+        'authService.signInWithSocialMedia succeeds and returns user',
         act: (bloc) => bloc.add(
           const LoginWithSocialMediaRequested(method: SocialMediaMethod.GOOGLE),
         ),
@@ -191,6 +195,30 @@ void main() {
             email: Email.pure(),
             password: Password.pure(),
           ),
+        ],
+      );
+
+      blocTest<LoginBloc, LoginState>(
+        'emits [loading, loggedOut] when '
+        'authService.signInWithSocialMedia succeeds and returns null',
+        act: (bloc) => bloc.add(
+          const LoginWithSocialMediaRequested(method: SocialMediaMethod.GOOGLE),
+        ),
+        build: () {
+          when(
+            mockAuthService.signInWithSocialMedia(
+              method: SocialMediaMethod.GOOGLE,
+            ),
+          ).thenAnswer((_) async => null);
+
+          return LoginBloc(
+            authService: mockAuthService,
+            analyticsService: mockAnalyticsService,
+          );
+        },
+        expect: () => <LoginState>[
+          LoginState.initial().copyWith(status: LoginStatus.loading),
+          LoginState.initial().copyWith(status: LoginStatus.loggedOut),
         ],
       );
 
@@ -227,8 +255,9 @@ void main() {
         ],
       );
 
-      blocTest<LoginBloc, LoginState>(
-        'calls authService.signOut',
+      blocTest(
+        'calls authService.signInAnonymously',
+        act: (bloc) => bloc.add(const LoginAnonymouslyRequested()),
         build: () {
           return LoginBloc(
             authService: mockAuthService,
@@ -236,7 +265,62 @@ void main() {
           );
         },
         verify: (_) {
-          mockAuthService.signOut();
+          verify(mockAuthService.signInAnonymously()).called(1);
+        },
+      );
+
+      blocTest(
+        'emits [loading, loggedIn] when authService.signInAnonymously succeeds',
+        act: (bloc) => bloc.add(const LoginAnonymouslyRequested()),
+        build: () {
+          when(mockAuthService.signInAnonymously())
+              .thenAnswer((_) async => mockUser);
+
+          return LoginBloc(
+            authService: mockAuthService,
+            analyticsService: mockAnalyticsService,
+          );
+        },
+        expect: () => <LoginState>[
+          LoginState.initial().copyWith(status: LoginStatus.loading),
+          LoginState.initial().copyWith(
+            status: LoginStatus.loggedIn,
+            user: mockUser,
+          )
+        ],
+      );
+
+      blocTest(
+        'emits [loading, failure] when authService.signInAnonymously throws',
+        act: (bloc) => bloc.add(const LoginAnonymouslyRequested()),
+        build: () {
+          when(mockAuthService.signInAnonymously()).thenThrow(AuthError.ERROR);
+
+          return LoginBloc(
+            authService: mockAuthService,
+            analyticsService: mockAnalyticsService,
+          );
+        },
+        expect: () => <LoginState>[
+          LoginState.initial().copyWith(status: LoginStatus.loading),
+          LoginState.initial().copyWith(
+            status: LoginStatus.failure,
+            error: AuthError.ERROR,
+          )
+        ],
+      );
+
+      blocTest<LoginBloc, LoginState>(
+        'calls authService.signOut',
+        act: (bloc) => bloc.add(const LogoutRequested()),
+        build: () {
+          return LoginBloc(
+            authService: mockAuthService,
+            analyticsService: mockAnalyticsService,
+          );
+        },
+        verify: (_) {
+          verify(mockAuthService.signOut()).called(1);
         },
       );
 
@@ -299,7 +383,7 @@ void main() {
           );
         },
         verify: (_) {
-          mockAuthService.currentUser();
+          verify(mockAuthService.currentUser()).called(1);
         },
       );
 

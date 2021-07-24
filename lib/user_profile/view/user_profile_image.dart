@@ -1,25 +1,25 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebasestarter/constants/assets.dart';
 import 'package:firebasestarter/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:string_validator/string_validator.dart';
 
-class ProfileImage extends StatelessWidget {
-  final String image;
-  final double height;
-  final double width;
-  final bool editable;
-  final VoidCallback onTap;
-
-  const ProfileImage({
+class UserProfileImage extends StatelessWidget {
+  const UserProfileImage({
+    Key key,
     this.image,
     this.height,
     this.width,
     this.editable = false,
     this.onTap,
-  });
+  }) : super(key: key);
+
+  final String image;
+  final double height;
+  final double width;
+  final bool editable;
+  final VoidCallback onTap;
 
   Widget _networkImage() => Image(
         image: CachedNetworkImageProvider(image),

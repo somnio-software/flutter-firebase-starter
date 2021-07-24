@@ -1,5 +1,5 @@
 import 'package:firebasestarter/constants/colors.dart';
-import 'package:firebasestarter/edit_profile/view/edit_profile_screen.dart';
+import 'package:firebasestarter/edit_profile/edit_profile.dart';
 import 'package:firebasestarter/models/user.dart';
 import 'package:firebasestarter/user_profile/user_profile.dart';
 import 'package:firebasestarter/widgets/common/margin.dart';
@@ -8,7 +8,9 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UserInfoSection extends StatelessWidget {
-  const UserInfoSection({@required this.user}) : assert(user != null);
+  const UserInfoSection({Key key, @required this.user})
+      : assert(user != null),
+        super(key: key);
 
   final User user;
 
@@ -22,7 +24,7 @@ class UserInfoSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Margin(0.0, 30.0),
-          ProfileImage(image: user.imageUrl),
+          UserProfileImage(image: user.imageUrl),
           Margin(0.0, 43.0),
           _UserInfoItem(
             title: _localizedStrings.firstName,

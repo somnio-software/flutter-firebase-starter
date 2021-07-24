@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:firebasestarter/forms/forms.dart';
 import 'package:firebasestarter/models/user.dart';
-import 'package:firebasestarter/services/auth/auth_service.dart';
+import 'package:firebasestarter/services/auth/auth.dart';
 import 'package:firebasestarter/services/image_picker/image_service.dart';
 import 'package:firebasestarter/services/storage/storage_service.dart';
 import 'package:flutter/foundation.dart';
@@ -76,7 +76,7 @@ class EditProfileBloc extends Bloc<EditProfileEvent, EditProfileState> {
   Stream<EditProfileState> _mapEditProfileFirstNameChangedToState(
     EditProfileFirstNameChanged event,
   ) async* {
-    final firstName = FirstName.dirty(event.name);
+    final firstName = FirstName.dirty(event.firstName);
 
     yield state.copyWith(
       firstName: firstName,

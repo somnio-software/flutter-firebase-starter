@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:bloc_test/bloc_test.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebasestarter/edit_profile/edit_profile.dart';
@@ -82,6 +81,7 @@ void main() {
     group('EditProfileUserRequested', () {
       blocTest<EditProfileBloc, EditProfileState>(
         'calls authService.currentUser',
+        act: (bloc) => bloc.add(const EditProfileUserRequested()),
         build: () {
           when(() => mockAuthService.currentUser())
               .thenAnswer((_) async => mockUser);
@@ -93,7 +93,7 @@ void main() {
           );
         },
         verify: (_) {
-          mockAuthService.currentUser();
+          verify(() => mockAuthService.currentUser()).called(1);
         },
       );
 
@@ -156,7 +156,8 @@ void main() {
     group('EditProfileFirstNameChanged', () {
       blocTest<EditProfileBloc, EditProfileState>(
         'emits updated firstName and invalid status',
-        act: (bloc) => bloc.add(const EditProfileFirstNameChanged(firstName)),
+        act: (bloc) =>
+            bloc.add(const EditProfileFirstNameChanged(firstName: firstName)),
         build: () {
           return EditProfileBloc(
             authService: mockAuthService,
@@ -175,7 +176,8 @@ void main() {
 
       blocTest<EditProfileBloc, EditProfileState>(
         'emits updated firstName and valid status',
-        act: (bloc) => bloc.add(const EditProfileFirstNameChanged(firstName)),
+        act: (bloc) =>
+            bloc.add(const EditProfileFirstNameChanged(firstName: firstName)),
         seed: () => EditProfileState(
           status: EditProfileStatus.initial,
           lastName: LastName.dirty(lastName),
@@ -202,7 +204,8 @@ void main() {
     group('EditProfileLastNameChanged', () {
       blocTest<EditProfileBloc, EditProfileState>(
         'emits updated lastName and invalid status',
-        act: (bloc) => bloc.add(const EditProfileLastNameChanged(lastName)),
+        act: (bloc) =>
+            bloc.add(const EditProfileLastNameChanged(lastName: lastName)),
         build: () {
           return EditProfileBloc(
             authService: mockAuthService,
@@ -221,7 +224,8 @@ void main() {
 
       blocTest<EditProfileBloc, EditProfileState>(
         'emits updated lastName and valid status',
-        act: (bloc) => bloc.add(const EditProfileLastNameChanged(lastName)),
+        act: (bloc) =>
+            bloc.add(const EditProfileLastNameChanged(lastName: lastName)),
         seed: () => EditProfileState(
           status: EditProfileStatus.initial,
           firstName: FirstName.dirty(firstName),

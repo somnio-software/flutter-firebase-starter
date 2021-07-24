@@ -97,7 +97,7 @@ class _ProfileImage extends StatelessWidget {
     final image = context.select((EditProfileBloc bloc) => bloc.state.imageURL);
     final validImage = image != null;
 
-    return ProfileImage(
+    return UserProfileImage(
       editable: true,
       onTap: () => showModalBottomSheet(
         context: context,
@@ -224,7 +224,7 @@ class _FirstNameTextField extends StatelessWidget {
       onChanged: (firstName) {
         context
             .read<EditProfileBloc>()
-            .add(EditProfileFirstNameChanged(firstName));
+            .add(EditProfileFirstNameChanged(firstName: firstName));
       },
       decoration: InputDecoration(
         errorBorder: const UnderlineInputBorder(
@@ -249,7 +249,7 @@ class _LastNameTextField extends StatelessWidget {
       onChanged: (lastName) {
         context
             .read<EditProfileBloc>()
-            .add(EditProfileLastNameChanged(lastName));
+            .add(EditProfileLastNameChanged(lastName: lastName));
       },
       decoration: InputDecoration(
         errorBorder: const UnderlineInputBorder(
